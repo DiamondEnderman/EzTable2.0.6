@@ -23723,20 +23723,19 @@ autoDisable(memrec)
                   <AssemblerScript>{$lua}
 if syntaxcheck then return end
 [enable]
+local bullets = {
+  2150020,  --Red Explosion
+  11370000, --Crystals
+  113,      --113
+  1001      --Unused Tracker
+}
 
-bullet = Bullet:new("e",2150020)--Red Explosion
-         bullet:life(0)
-
-bullet1 = Bullet:new("e",11370000)--Crystals
-         bullet1:life(0)
-
-bullet2 = Bullet:new("e",113)--113
-         bullet2:life(0)
-
-bullet3 = Bullet:new("e",1001)--Unused Tracker
-         bullet3:life(0)
+for _,bid in ipairs(bullets) do
+  local bullet = Bullet:new("removeBullet", bid)
+  	bullet:life(0)
+end
 [disable]
-paramUtils:restore("e")
+paramUtils:restore("removeBullet")
 </AssemblerScript>
                 </CheatEntry>
               </CheatEntries>
