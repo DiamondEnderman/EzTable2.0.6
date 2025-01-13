@@ -376,18 +376,32 @@ function toHex(number)
 end
 
 --setbit Function
+registerLuaFunctionHighlight('writeBit')
+registerLuaFunctionHighlight('setbit')
 function writeBit(addr_str, bit, value)
     local addr = getAddress(addr_str)
-    writeBytes(addr + (bit &gt;&gt; 3), (readBytes(addr + (bit &gt;&gt; 3), 1) &amp; ~(1 &lt;&lt; (bit &amp; 7))) | (value &lt;&lt; (bit &amp; 7)))
+    writeBytes(addr + (bit >> 3), (readBytes(addr + (bit >> 3), 1) & ~(1 << (bit & 7))) | (value << (bit & 7)))
 end
+setBit = writeBit
 
 --readbit Function
+registerLuaFunctionHighlight('readBit')
 function readBit(addr_str, bit)
     local addr = getAddress(addr_str)
-    local byteValue = readBytes(addr + (bit &gt;&gt; 3), 1)
-    local bitValue = (byteValue &gt;&gt; (bit &amp; 7)) &amp; 1
+    local byteValue = readBytes(addr + (bit >> 3), 1)
+    local bitValue = (byteValue >> (bit & 7)) & 1
     return bitValue
 end
+
+-- because no null terminator on writeString(addr, str, isWchar)
+registerLuaFunctionHighlight('writeWChar')
+function writeWChar(addr, str)
+  local bytes = wideStringToByteTable(str)
+  table.insert(bytes, 0)
+  table.insert(bytes, 0)
+  return writeBytes(addr, bytes)
+end
+
 
 --inArray Function
 function inArray(array, item)
@@ -23709,20 +23723,19 @@ autoDisable(memrec)
                   <AssemblerScript>{$lua}
 if syntaxcheck then return end
 [enable]
+local bullets = {
+  2150020,  --Red Explosion
+  11370000, --Crystals
+  113,      --113
+  1001      --Unused Tracker
+}
 
-bullet = Bullet:new("e",2150020)--Red Explosion
-         bullet:life(0)
-
-bullet1 = Bullet:new("e",11370000)--Crystals
-         bullet1:life(0)
-
-bullet2 = Bullet:new("e",113)--113
-         bullet2:life(0)
-
-bullet3 = Bullet:new("e",1001)--Unused Tracker
-         bullet3:life(0)
+for _,bid in ipairs(bullets) do
+  local bullet = Bullet:new("removeBullet", bid)
+  	bullet:life(0)
+end
 [disable]
-paramUtils:restore("e")
+paramUtils:restore("removeBullet")
 </AssemblerScript>
                 </CheatEntry>
               </CheatEntries>
